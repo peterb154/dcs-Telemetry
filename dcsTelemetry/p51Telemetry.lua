@@ -80,6 +80,7 @@ function getTelemetry()
     data = {}
     data.IAS = round(LoGetIndicatedAirSpeed() * mps2mph, 0) -- (args - 0, results - 1 (m/s))
     data.TAS = round(LoGetTrueAirSpeed() * mps2mph, 0) -- (args - 0, results - 1 (m/s))
+    data.TAS_10 = round(LoGetTrueAirSpeed() * mps2mph / 10, 1) -- (args - 0, results - 1 (m/s))
     data.ASL = round(LoGetAltitudeAboveSeaLevel() * meter2feet, 0) -- (args - 0, results - 1 (meters))
     data.AGL = round(LoGetAltitudeAboveGroundLevel() * meter2feet, 0) -- (args - 0, results - 1 (meters))
     data.AOA = round(LoGetAngleOfAttack(), 1) -- (args - 0, results - 1 (rad))
