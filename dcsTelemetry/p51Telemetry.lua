@@ -1,26 +1,23 @@
 local modName = 'DCS-p51Telemetry'
-TARGET_AIRCRAFT = "P-51D"
-THIS_AIRCRAFT = LoGetObjectById(LoGetPlayerPlaneId()).Name
 log.write(modName, log.DEBUG, "Loading modName: " .. modName)
+TARGET_AIRCRAFT = "P-51D"
+log.write(modName, log.INFO, "LoIsOwnshipExportAllowed() = " .. tostring(LoIsOwnshipExportAllowed()))
+log.write(modName, log.INFO, "LoIsSensorExportAllowed() = " .. tostring(LoIsSensorExportAllowed()))
+log.write(modName, log.INFO, "LoIsObjectExportAllowed() = " .. tostring(LoIsObjectExportAllowed()))
 local headers_printed = false
 
 function LuaExportStart()
-    -- Works once just before mission start.
-    if not string.find(THIS_AIRCRAFT, TARGET_AIRCRAFT) then
-        -- if this is not the target aircraft, get out
-        return
-    end
+    -- Works once just before mission start. We wont be able to get self data until we select an aircraft
     -- configure log output
     log.set_output(modName, modName, log.TRACE, log.MESSAGE)
     headers_printed = false
     local version = LoGetVersionInfo()
-    local pilot = LoGetPilotName()
     version = string.format("DCS Version: %d.%d.%d.%d",
             version.ProductVersion[1],
             version.ProductVersion[2],
             version.ProductVersion[3],
             version.ProductVersion[4])
-    logEvent("=========== Mission Start ," .. version .. ", Pilot: " .. pilot .. ", Type: " .. THIS_AIRCRAFT)
+    logEvent("=========== Mission Start ," .. version)
 end
 
 function LuaExportBeforeNextFrame()
@@ -32,10 +29,6 @@ function LuaExportAfterNextFrame()
 end
 
 function LuaExportStop()
-    if not string.find(THIS_AIRCRAFT, TARGET_AIRCRAFT) then
-        -- if this is not the target aircraft, get out
-        return
-    end
     -- Works once just after mission stop.
     logEvent("=========== Mission End")
     -- close the log file, means that new log file gets created every mission
@@ -49,6 +42,10 @@ end
 
 function LuaExportActivityNextEvent(t)
     -- runs every 1 second
+    THIS_AIRCRAFT = "UNKNOWN"
+    if LoIsOwnshipExportAllowed() then
+        THIS_AIRCRAFT = LoGetSelfData.Name
+    end
     if not string.find(THIS_AIRCRAFT, TARGET_AIRCRAFT) then
         -- if this is not the target aircraft, get out
         return
